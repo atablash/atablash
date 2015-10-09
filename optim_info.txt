@@ -1,0 +1,7 @@
+
+
+sortowanie po wskaünikach jest szybsze niø po iteratorach vectora
+
+bind nie dzia≥a wolniej od wskaünikÛw na member variables
+
+nieszczesliwie uzycie lambdy w sortowaniu dzia≥a minimalnie wolniej niø standardowy operator< (ale nie sprawdza≥em z zewnÍtrznπ funkcjπ nie-lambdowπ)
