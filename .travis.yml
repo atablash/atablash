@@ -17,5 +17,5 @@ addons:
 script:
   - cmake -D CMAKE_C_COMPILER=gcc-7 -D CMAKE_CXX_COMPILER=g++-7 -D ATABLASH_BUILD_TESTS=ON .
   - make
-  - make --output-on-failure test
+  - ctest --output-on-failure
 
