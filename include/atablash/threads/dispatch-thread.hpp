@@ -181,24 +181,28 @@ public:
 	
 	// async dispatch delayed
 	template<class FUN, class DUR>
-	void dispatch_delayed(FUN&& fun, DUR&& duration, bool force = false, int priority = 1000){
-		auto dest_time_point = Clock::now() + duration;
-		
+	void dispatch_after(FUN&& fun, DUR&& delay, bool force = false, int priority = 1000){
+		auto time_point = Clock::now() + delay;
+		dispatch_at(std::forward<FUN>(fun), time_point, force, priority);
+	}
+	
+	// async dispatch delayed
+	template<class FUN, class TIME_POINT>
+	void dispatch_at(FUN&& fun, TIME_POINT&& time_point, bool force = false, int priority = 1000){
 		Job job;
 		job.priority = priority;
 		job.fun = std::forward<FUN>(fun);
 		job.force = force;
 		
-		job.scheduled_for = dest_time_point;
+		job.scheduled_for = time_point;
 	
 		auto lock = std::lock_guard(control_mutex);
 		
 		scheduled_for_later.insert(std::make_pair(
-			dest_time_point, std::move(job)));
+			time_point, std::move(job)));
 			
 		new_job_event.notify_one();
 	}
-	
 	
 	// synchronous dispatch with priority
 	template<class FUN>

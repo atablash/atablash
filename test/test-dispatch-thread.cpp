@@ -122,7 +122,7 @@ TEST(TestDispatchThread, Delay) {
 		
 		t0 = clock::now();
 	
-		dt.dispatch_delayed([&value](){value = 69;}, delay, true);
+		dt.dispatch_after([&value](){value = 69;}, delay, true);
 		
 	}
 	
