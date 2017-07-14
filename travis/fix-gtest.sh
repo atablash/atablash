@@ -3,6 +3,6 @@ mkdir /tmp/.build
 cd /tmp/.build
 cmake -D CMAKE_BUILD_TYPE=RELEASE /usr/src/gtest/
 make
-mv libg* /usr/lib/
+sudo mv libg* /usr/lib/
 rm -rf /tmp/.build
 
