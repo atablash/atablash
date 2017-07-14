@@ -15,13 +15,17 @@ addons:
       # dependencies
       - libgoogle-glog-dev
       - libgtest-dev
+      
+before_install:
+  - export CC=gcc-7
+  - export CXX=g++-7
 
 install:
   - travis/fix-gtest.sh
 
 script:
   # build
-  - cmake -D CMAKE_C_COMPILER=gcc-7 -D CMAKE_CXX_COMPILER=g++-7 -D ATABLASH_BUILD_TESTS=ON .
+  - cmake -D ATABLASH_BUILD_TESTS=ON .
   - make
   - ctest --verbose
 
