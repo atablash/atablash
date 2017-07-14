@@ -8,14 +8,19 @@ addons:
     sources:
       # C++17
       - ubuntu-toolchain-r-test
+      # new version of CMake
+      - kalakris-cmake
     packages:
       # C++17
       - g++-7
+      # new version of cmake
+      - cmake
+      # dependencies
       - libgoogle-glog-dev
       - libgtest-dev
 
 script:
   - cmake -D CMAKE_C_COMPILER=gcc-7 -D CMAKE_CXX_COMPILER=g++-7 -D ATABLASH_BUILD_TESTS=ON .
   - make
-  - ctest --output-on-failure
+  - ctest --verbose
 
