@@ -16,7 +16,7 @@ addons:
       - libgtest-dev
 
 install:
-  travis/fix-gtest.sh
+  - travis/fix-gtest.sh
 
 script:
   # build
