@@ -8,10 +8,10 @@ addons:
   apt:
     sources:
       # C++17
-      #- ubuntu-toolchain-r-test
+      - ubuntu-toolchain-r-test
     packages:
       # C++17
-      #- g++-7
+      - g++-7
       # dependencies
       - libgoogle-glog-dev
       - libgtest-dev
