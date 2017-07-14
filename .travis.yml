@@ -11,9 +11,10 @@ before_install:
 install:
   # C++17
   - sudo apt-get install -qq g++-7
+  - sudo apt-get install -qq libgoogle-glog libgtest-dev
 
 script:
-  - cmake -D ATABLASH_BUILD_TESTS=ON .
+  - cmake -D CMAKE_C_COMPILER=gcc-7 -D CMAKE_CXX_COMPILER=g++-7 -D ATABLASH_BUILD_TESTS=ON .
   - make
   - make test --output-on-failure
 
