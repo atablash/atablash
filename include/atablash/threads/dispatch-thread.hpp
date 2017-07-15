@@ -231,12 +231,14 @@ public:
 		
 		Job job;
 		job.priority = priority;
-		job.fun = std::forward(fun);
+		job.fun = std::forward<FUN>(fun);
 		job.force = false;
 		
 		job.repeating = true;
 		//job.catch_up = catch_up;
-		job.interval = std::forward(interval);
+		job.interval = std::forward<DUR>(interval);
+		
+		job.scheduled_for = Clock::now();
 		
 		auto lock = std::unique_lock(control_mutex);
 		
@@ -417,6 +419,8 @@ private:
 					// schedule next invocation
 					
 					job.scheduled_for += job.interval;
+					
+					fun = job.fun;
 					
 					auto scheduled_for = job.scheduled_for;
 					

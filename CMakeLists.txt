@@ -27,7 +27,6 @@ option(ATABLASH_BUILD_TESTS "Build atablash tests" OFF)
 #===============================================================================
 # Additional cmake modules
 #===============================================================================
-
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -pipe -march=native -mtune=native -mfpmath=sse")
@@ -40,7 +39,6 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -pipe -march=native -mtu
 #===============================================================================
 # set compiler options, output all warnings
 #===============================================================================
-
 add_definitions(
 	-Wall -Wextra -Werror -Wshadow -Wfatal-errors
 )
@@ -54,7 +52,6 @@ add_definitions(
 #===============================================================================
 # packages
 #===============================================================================
-
 find_package(glog REQUIRED)
 
 
@@ -67,7 +64,6 @@ find_package(glog REQUIRED)
 #===============================================================================
 # testing
 #===============================================================================
-
 if(ATABLASH_BUILD_TESTS)
 	enable_testing()
 	find_package(GTest REQUIRED)
@@ -86,7 +82,6 @@ endif(ATABLASH_BUILD_TESTS)
 #===============================================================================
 # output build configuration
 #===============================================================================
-
 message("\n")
 message("Build configuration:\n")
 message("** Build type: " ${CMAKE_BUILD_TYPE})
