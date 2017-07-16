@@ -249,7 +249,8 @@ public:
 	
 	std::thread::id id() const { return th.get_id(); }
 
-private:
+
+	// disable copying (and moving)
 	Dispatch_thread(const Dispatch_thread&) = delete;
 	Dispatch_thread& operator=(const Dispatch_thread&) = delete;
 

@@ -133,6 +133,9 @@ TEST(TestDispatchThread, Delay) {
 }
 
 
+//
+// TODO: test dispatch_repeating
+//
 
 
 int main(int argc, char **argv) {
