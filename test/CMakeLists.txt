@@ -58,13 +58,13 @@ add_definitions(
 
 
 add_executable(
-	test-concepts
-	test-concepts.cpp
+	test-clone
+	test-clone.cpp
 )
 target_link_libraries(
-	test-concepts
+	test-clone
 	${CMAKE_THREAD_LIBS_INIT} # required by GoogleTest
 	${GTEST_LIBRARIES}
 )
-add_test(test-concepts test-concepts)
+add_test(test-clone test-clone)
 
