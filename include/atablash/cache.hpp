@@ -8,6 +8,13 @@ namespace ab {
 
 
 
+//
+// A cache that caches objects of a given type T
+// * Elements are identified using URI identifier object (string?)
+// * An optional load_function can be specified, which loads T given URI
+// * It returns const T* - the idea is not to modify its objects (it's a cache after all)
+// * It doesn't move around Ts once created (just like unordered_map)
+//
 template<class URI, class T>
 class Cache {
 public:
@@ -24,7 +31,7 @@ public:
 	
 	
 	template<class FILE_NAME>
-	T* get_or_load(FILE_NAME&& file_name) {
+	const T* get(FILE_NAME&& file_name) {
 		auto itr = objects.find(file_name);
 		if(itr == objects.end()) {
 			itr = objects.emplace(file_name, load_function(file_name)).first;

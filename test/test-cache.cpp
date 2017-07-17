@@ -13,7 +13,7 @@ using namespace std::string_literals;
 TEST(TestCache, DefaultLoadFunction) {
 	Cache<std::string, std::string> cache;
 	
-	auto pstr = cache.get_or_load("test69");
+	auto pstr = cache.get("test69");
 	EXPECT_EQ("test69"s, *pstr);
 }
 
@@ -45,8 +45,8 @@ private:
 TEST(TestCache, DoesNotReload) {
 	Cache<std::string, Test_object> cache;
 	
-	cache.get_or_load("test699");
-	auto obj = cache.get_or_load("test699");
+	cache.get("test699");
+	auto obj = cache.get("test699");
 	
 	EXPECT_EQ(1, obj->get_number_of_loads());
 }
@@ -56,10 +56,23 @@ TEST(TestCache, DoesNotReload) {
 TEST(TestCache, CustomLoadFunction) {
 	Cache<std::string, int> cache([](const std::string& uri){return (int)uri.size();});
 	
-	auto obj = cache.get_or_load("1234567");
+	auto obj = cache.get("1234567");
 	
 	EXPECT_EQ(7, *obj);
 }
+
+TEST(TestCache, DoesNotRelocate) {
+	Cache<int,int> cache;
+	auto ptr = cache.get(123);
+	for(int i=0; i<1'000'000; ++i) {
+		cache.get(rand());
+	}
+	auto new_ptr = cache.get(123);
+	
+	EXPECT_EQ(ptr, new_ptr);
+}
+
+
 
 
 
