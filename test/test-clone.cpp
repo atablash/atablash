@@ -145,6 +145,27 @@ TEST(HasClone, BadReturnType2) {
 
 
 
+struct U {
+	virtual std::unique_ptr<U> clone() const;
+};
+
+struct V : U {
+	std::unique_ptr<U> clone() const override;
+};
+
+TEST(HasClone, SmartPointer) {
+	EXPECT_TRUE(Tester<U>::has_clone());
+	EXPECT_TRUE(Tester<V>::has_clone());
+}
+
+
+
+
+
+
+
+
+
 
 int main(int argc, char **argv) {
 	::testing::InitGoogleTest(&argc, argv);
