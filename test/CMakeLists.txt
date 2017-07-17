@@ -42,3 +42,29 @@ target_link_libraries(
 )
 add_test(test-cache test-cache)
 
+
+
+
+
+
+
+add_definitions(
+	-fconcepts
+)
+
+
+
+
+
+
+add_executable(
+	test-concepts
+	test-concepts.cpp
+)
+target_link_libraries(
+	test-concepts
+	${CMAKE_THREAD_LIBS_INIT} # required by GoogleTest
+	${GTEST_LIBRARIES}
+)
+add_test(test-concepts test-concepts)
+

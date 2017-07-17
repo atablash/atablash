@@ -40,7 +40,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -pipe -march=native -mtu
 # set compiler options, output all warnings
 #===============================================================================
 add_definitions(
-	-Wall -Wextra -Werror -Wshadow -Wfatal-errors
+	-Wall -Wextra -Werror -Wshadow
 )
 
 
