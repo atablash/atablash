@@ -2,6 +2,7 @@
 
 #include <unordered_map>
 #include <functional>
+#include <memory>
 
 
 namespace ab {
@@ -13,7 +14,9 @@ namespace ab {
 // * Elements are identified using URI identifier object (string?)
 // * An optional load_function can be specified, which loads T given URI
 // * It returns const T* - the idea is not to modify its objects (it's a cache after all)
-// * It doesn't move around Ts once created (just like unordered_map)
+// * It doesn't move around Ts once created
+// * currently modified to return shared_ptrs - it gives more possibilities,
+//   and performance is irrevelant in case of a cache
 //
 template<class URI, class T>
 class Cache {
@@ -31,12 +34,12 @@ public:
 	
 	
 	template<class FILE_NAME>
-	const T* get(FILE_NAME&& file_name) {
+	const std::shared_ptr<const T>& get(FILE_NAME&& file_name) {
 		auto itr = objects.find(file_name);
 		if(itr == objects.end()) {
-			itr = objects.emplace(file_name, load_function(file_name)).first;
+			itr = objects.emplace(file_name, std::make_shared<const T>(load_function(file_name))).first;
 		}
-		return &itr->second;
+		return itr->second;
 	}
 	
 
@@ -45,7 +48,7 @@ public:
 	Cache& operator=(const Cache&) = delete;
 
 private:
-	std::unordered_map<URI, T> objects;
+	std::unordered_map<URI, std::shared_ptr<const T>> objects;
 	std::function<T(const URI&)> load_function;
 };
 
