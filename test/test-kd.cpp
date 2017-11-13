@@ -2,7 +2,6 @@
 
 #include <atablash/kd.hpp>
 
-
 using namespace ab;
 
 
@@ -157,6 +156,49 @@ TEST(Kd, EachAabb) {
 	EXPECT_FLOAT_EQ(2.5, r[2]);
 	EXPECT_FLOAT_EQ(2.5, r[3]);
 }
+
+
+
+
+
+
+TEST(KdAabb, EachAabb) {
+	Kd_Aabb<double, 4> kd;
+
+	using Aabb = Eigen::AlignedBox<double, 4>;
+
+	std::vector<Aabb> v;
+
+	for(int i=0; i<1000; ++i) {
+		Vec4 fr = {rand()%10 * 1.0, rand()%10 * 1.0, rand()%10 * 1.0, rand()%10 * 1.0};
+		Vec4 to = {rand()%10 * 1.0, rand()%10 * 1.0, rand()%10 * 1.0, rand()%10 * 1.0};
+		auto new_fr = fr.array().min(to.array()).matrix();
+		auto new_to = to.array().max(fr.array()).matrix();
+		v.emplace_back(new_fr, new_to);
+	}
+
+	for(auto& bb : v) {
+		kd.insert(bb);
+	}
+
+	auto query_bb = Eigen::AlignedBox<double, 4>(Vec4{1.5, 1.5, 1.5, 1.5}, Vec4{3.5, 3.5, 3.5, 3.5});
+
+	int num = 0;
+	kd.each_intersect(query_bb, [&num](auto){
+		++num;
+	});
+
+	int true_num = 0;
+	for(auto& bb : v) {
+		if(bb.intersects(query_bb)) ++true_num;
+	}
+
+	EXPECT_EQ(true_num, num);
+}
+
+
+
+
 
 
 

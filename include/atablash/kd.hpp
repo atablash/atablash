@@ -14,6 +14,7 @@ namespace ab {
 
 //
 // basic implementation, requires input random_shuffled
+// TODO: remove recursion
 //
 template<class SCALAR, int DIM, class VAL = void>
 class Kd {
@@ -269,6 +270,189 @@ private:
 
 	Node* root = nullptr;
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//
+// basic implementation, requires input random_shuffled
+// TODO: remove recursion
+//
+template<class SCALAR, int DIM, class VAL = void>
+class Kd_Aabb {
+
+	using Scalar = SCALAR;
+	static const int Dim = DIM;
+	using Val = VAL;
+
+	using Aabb = Eigen::AlignedBox<Scalar, Dim>;
+	enum { NeedsToAlign = (sizeof(Aabb)%16)==0 };
+
+	using KeyVal = std::conditional_t<
+		std::is_same_v<Val,void>,
+			const Aabb,
+			std::pair<const Aabb,Val>>;
+
+
+	// stl
+public:
+	using value_type = KeyVal;
+
+
+private:
+	template<class KV>
+	static Aabb key_of_keyval(const KV& kv, typename std::enable_if_t<std::is_same_v<KV, Aabb>>* = 0) {
+		return kv;
+	}
+
+	template<class KV>
+	static Aabb key_of_keyval(const KV& kv, typename std::enable_if_t<!std::is_same_v<KV, Aabb>>* = 0) {
+		return kv.first;
+	}
+
+
+public:
+	~Kd_Aabb(){
+		if(root) delete root;
+	}
+
+	template<class KV>
+	void insert(KV&& keyval) {
+		insert_into(root, std::forward<KV>(keyval), 0);
+	}
+
+
+
+	template<class FUN>
+	void each_intersect(const Eigen::AlignedBox<Scalar, Dim>& aabb, FUN&& fun) {
+		if(!root) return;
+		return root->each_intersect(aabb, std::forward<FUN>(fun), 0);
+	}
+
+	template<class FUN>
+	void each_intersect(const Eigen::Matrix<Scalar, Dim, 1>& p, FUN&& fun) {
+		if(!root) return;
+		return root->each_intersect(Eigen::AlignedBox<Scalar, Dim>(p, p), std::forward<FUN>(fun), 0);
+	}
+
+
+
+private:
+
+	struct Node;
+
+	template<class KV>
+	inline static void insert_into(Node*& node, KV&& keyval, int axis) {
+		if(!node) {
+			node = new Node(std::forward<KV>(keyval), axis);
+		}
+		else {
+			node->insert(std::forward<KV>(keyval), axis);
+		}
+	}
+
+	struct Node {
+		Node(const KeyVal& keyval, int axis) : kv(keyval) {
+			l_to = r_fr = key_of_keyval(keyval).center()[axis];
+		}
+
+		~Node(){
+			if(l) delete l;
+			if(r) delete r;
+		}
+
+		template<class KV>
+		void insert(KV&& new_keyval, int axis) {
+			int new_axis = axis + 1;
+			if(new_axis == Dim) new_axis = 0;
+
+			const auto new_aabb = key_of_keyval((KeyVal)new_keyval);
+
+			auto l_fit = l_to - new_aabb.min()[axis];
+			auto r_fit = new_aabb.max()[axis] - r_fr;
+
+			if(l_fit > r_fit) {
+				l_to = std::max(l_to, new_aabb.max()[axis]);
+				insert_into(l, std::forward<KV>(new_keyval), new_axis);
+			}
+			else {
+				r_fr = std::min(r_fr, new_aabb.min()[axis]);
+				insert_into(r, std::forward<KV>(new_keyval), new_axis);
+			}
+		}
+
+
+
+
+		template<class FUN>
+		void each_intersect(const Eigen::AlignedBox<Scalar, Dim>& aabb, const FUN& fun, const int axis) {
+			int next_axis = axis + 1;
+			if(next_axis == Dim) next_axis = 0;
+
+			const auto my_aabb = key_of_keyval(kv);
+			
+			if(my_aabb.intersects(aabb)) {
+				fun(kv);
+			}
+
+			if(r && r_fr <= aabb.max()[axis]) {
+				r->each_intersect(aabb, fun, next_axis);
+			}
+
+			if(l && l_to >= aabb.min()[axis]) {
+				l->each_intersect(aabb, fun, next_axis);
+			}
+		}
+
+
+
+
+		KeyVal kv;
+
+		Node* l = nullptr;
+		Node* r = nullptr;
+
+		Scalar l_to;
+		Scalar r_fr;
+
+	public:
+		EIGEN_MAKE_ALIGNED_OPERATOR_NEW_IF(NeedsToAlign)
+	};
+
+	Node* root = nullptr;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
