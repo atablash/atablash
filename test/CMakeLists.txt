@@ -47,6 +47,21 @@ add_test(test-cache test-cache)
 
 
 
+add_executable(
+	test-kd
+	test-kd.cpp
+)
+target_link_libraries(
+	test-kd
+	${CMAKE_THREAD_LIBS_INIT} # required by GoogleTest
+	${GTEST_LIBRARIES}
+)
+add_test(test-kd test-kd)
+
+
+
+
+
 
 add_definitions(
 	-fconcepts

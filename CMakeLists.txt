@@ -56,6 +56,10 @@ find_package(glog REQUIRED)
 
 
 
+find_package(Eigen3 3.2 REQUIRED)
+if (EIGEN3_FOUND)
+	include_directories(SYSTEM ${EIGEN3_INCLUDE_DIR})
+endif()
 
 
 
