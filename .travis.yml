@@ -15,11 +15,10 @@ addons:
       # dependencies
       - libgoogle-glog-dev
       - libgtest-dev
-      - libeigen3-dev
+      #- libeigen3-dev
       
 before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get dist-upgrade -qq
+  - wget http://bitbucket.org/eigen/eigen/get/3.3.4.tar.bz2 && tar xvjf *.tar.bz2 && cd eigen* && mkdir build && cd build && cmake .. && make -j$(cat /proc/cpuinfo | grep processor | wc -l) && make install && cd ../.. && rm -r eigen* && rm -r *.tar.bz2
   - export CC=gcc-7
   - export CXX=g++-7
 
