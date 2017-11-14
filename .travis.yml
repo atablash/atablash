@@ -18,7 +18,7 @@ addons:
       #- libeigen3-dev
       
 before_install:
-  - wget http://bitbucket.org/eigen/eigen/get/3.3.4.tar.bz2 && tar xvjf *.tar.bz2 && cd eigen* && mkdir build && cd build && cmake .. && make -j$(cat /proc/cpuinfo | grep processor | wc -l) && sudo make install && cd ../.. && rm -r eigen* && rm -r *.tar.bz2
+  - wget http://bitbucket.org/eigen/eigen/get/3.3.4.tar.bz2 && tar xvjf *.tar.bz2 && cd eigen* && mkdir build && cd build && cmake .. && make -j$(cat /proc/cpuinfo | grep processor | wc -l) && sudo make install && cd ../.. && rm -rf eigen* && rm -r *.tar.bz2
   - export CC=gcc-7
   - export CXX=g++-7
 
