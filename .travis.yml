@@ -15,6 +15,7 @@ addons:
       # dependencies
       - libgoogle-glog-dev
       - libgtest-dev
+      - libeigen3-dev
       
 before_install:
   - export CC=gcc-7
