@@ -86,7 +86,7 @@ TEST(Kd, FindClosestVal) {
 
 	auto v = kd.find_closest({1.12, 2.9, 3.9, 0.8});
 	ASSERT_NE(nullptr, v);
-	EXPECT_EQ(1000*1 + 100*3 + 10*4 + 1, v->second);
+	EXPECT_EQ(1000*1 + 100*3 + 10*4 + 1, v->val);
 }
 
 

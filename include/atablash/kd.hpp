@@ -26,15 +26,25 @@ class Kd {
 	using Vec = Eigen::Matrix<Scalar, Dim, 1>;
 	enum { NeedsToAlign = (sizeof(Vec)%16)==0 };
 
-	using KeyVal = std::conditional_t<
+private:
+	struct Key_Val {
+
+		template<class U, class V>
+		Key_Val(const std::pair<U,V>& p) : key(p.first), val(p.second) {}
+
+		template<class U, class V>
+		operator std::pair<U,V>() {return {key,val}; }
+
+		const Vec key;
+		VAL val;
+	};
+
+
+public:
+	using value_type = std::conditional_t<
 		std::is_same_v<Val,void>,
 			const Vec,
-			std::pair<const Vec,Val>>;
-
-
-	// stl
-public:
-	using value_type = KeyVal;
+			Key_Val>;
 
 
 private:
@@ -44,8 +54,8 @@ private:
 	}
 
 	template<class KV>
-	static Vec key_of_keyval(const KV& kv, typename std::enable_if_t<!std::is_same_v<KV, Vec>>* = 0) {
-		return kv.first;
+	static Vec key_of_keyval(const KV& kv, typename std::enable_if_t<std::is_same_v<KV, Key_Val>>* = 0) {
+		return kv.key;
 	}
 
 
@@ -61,27 +71,27 @@ public:
 
 
 
-	KeyVal* find_closest(const Vec& point) {
+	value_type* find_closest(const Vec& point) {
 		if(!root) return nullptr;
 		return root->find_closest_if(point, 0, [](auto){return true;});
 	}
 
 	template<class Pred>
-	KeyVal* find_closest_if(const Vec& point, Pred&& pred) {
+	value_type* find_closest_if(const Vec& point, Pred&& pred) {
 		if(!root) return nullptr;
 		return root->find_closest_if(point, 0, std::forward<Pred>(pred));
 	}
 
 
 
-	std::vector<KeyVal*> find_k_closest(const Vec& point, int k) {
-		if(!root) return std::vector<KeyVal*>();
+	std::vector<value_type*> find_k_closest(const Vec& point, int k) {
+		if(!root) return std::vector<value_type*>();
 		return root->find_k_closest_if(point, k, 0, [](auto){return true;});
 	}
 
 	template<class Pred>
-	std::vector<KeyVal*> find_k_closest_if(const Vec& point, int k, Pred&& pred) {
-		if(!root) return std::vector<KeyVal*>();
+	std::vector<value_type*> find_k_closest_if(const Vec& point, int k, Pred&& pred) {
+		if(!root) return std::vector<value_type*>();
 		return root->find_k_closest_if(point, k, 0, std::forward<Pred>(pred));
 	}
 
@@ -111,7 +121,7 @@ private:
 	}
 
 	struct Node {
-		Node(const KeyVal& keyval) : kv(keyval) {}
+		Node(const value_type& keyval) : kv(keyval) {}
 
 		~Node(){
 			if(l) delete l;
@@ -124,7 +134,7 @@ private:
 			if(new_axis == Dim) new_axis = 0;
 
 			const auto point = key_of_keyval(kv);
-			const auto new_point = key_of_keyval((KeyVal)new_keyval);
+			const auto new_point = key_of_keyval((value_type)new_keyval);
 
 			if(new_point[axis] < point[axis]) {
 				insert_into(l, std::forward<KV>(new_keyval), new_axis);
@@ -136,7 +146,7 @@ private:
 
 
 		template<class Pred>
-		KeyVal* find_closest_if(const Vec& query_point, int axis, const Pred& pred) {
+		value_type* find_closest_if(const Vec& query_point, int axis, const Pred& pred) {
 
 			int new_axis = axis + 1;
 			if(new_axis == Dim) new_axis = 0;
@@ -148,17 +158,17 @@ private:
 
 			if(query_point[axis] >= point[axis]) std::swap(ll, rr);
 
-			KeyVal* cand = nullptr;
+			value_type* cand = nullptr;
 			if(ll) cand = ll->find_closest_if(query_point, new_axis, pred);
 
 			if(cand && (key_of_keyval(*cand) - query_point).norm() < std::abs(point[axis] - query_point[axis])) {
 				return cand;
 			}
 
-			KeyVal* cand2 = nullptr;
+			value_type* cand2 = nullptr;
 			if(rr) cand2 = rr->find_closest_if(query_point, new_axis, pred);
 
-			KeyVal* best = nullptr;
+			value_type* best = nullptr;
 			if(pred(kv)) best = &kv;
 
 			if(cand && (!best ||
@@ -178,7 +188,7 @@ private:
 
 
 		template<class Pred>
-		std::vector<KeyVal*> find_k_closest_if(const Vec& query_point, int k, int axis, const Pred& pred) {
+		std::vector<value_type*> find_k_closest_if(const Vec& query_point, int k, int axis, const Pred& pred) {
 
 			int new_axis = axis + 1;
 			if(new_axis == Dim) new_axis = 0;
@@ -190,7 +200,7 @@ private:
 
 			if(query_point[axis] >= point[axis]) std::swap(ll, rr);
 
-			std::vector<KeyVal*> result;
+			std::vector<value_type*> result;
 
 			if(ll) result = ll->find_k_closest_if(query_point, k, new_axis, pred);
 
@@ -220,7 +230,7 @@ private:
 			if((int)result.size() > k) {
 
 				// TODO: hack... how to capture key_of_keyval directly?
-				auto get_key = [](const KeyVal& keyval){return key_of_keyval(keyval);};
+				auto get_key = [](const value_type& keyval){return key_of_keyval(keyval);};
 
 				std::sort(result.begin(), result.end(), [&query_point, &get_key](auto& a, auto& b) {
 					auto aa = get_key(*a);
@@ -259,7 +269,7 @@ private:
 
 
 
-		KeyVal kv;
+		value_type kv;
 
 		Node* l = nullptr;
 		Node* r = nullptr;
