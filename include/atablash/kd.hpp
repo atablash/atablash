@@ -49,12 +49,12 @@ public:
 
 private:
 	template<class KV>
-	static Vec key_of_keyval(const KV& kv, typename std::enable_if_t<std::is_same_v<KV, Vec>>* = 0) {
+	static constexpr Vec key_of_keyval(const KV& kv, typename std::enable_if_t<std::is_same_v<KV, Vec>>* = 0) {
 		return kv;
 	}
 
 	template<class KV>
-	static Vec key_of_keyval(const KV& kv, typename std::enable_if_t<std::is_same_v<KV, Key_Val>>* = 0) {
+	static constexpr Vec key_of_keyval(const KV& kv, typename std::enable_if_t<std::is_same_v<KV, Key_Val>>* = 0) {
 		return kv.key;
 	}
 
