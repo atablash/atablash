@@ -385,7 +385,7 @@ private:
 
 	struct Node {
 		Node(const KeyVal& keyval, int axis) : kv(keyval) {
-			l_to = r_fr = key_of_keyval(keyval).center()[axis];
+			center = l_to = r_fr = key_of_keyval(keyval).center()[axis];
 		}
 
 		~Node(){
@@ -400,10 +400,10 @@ private:
 
 			const auto new_aabb = key_of_keyval((KeyVal)new_keyval);
 
-			auto l_fit = l_to - new_aabb.min()[axis];
-			auto r_fit = new_aabb.max()[axis] - r_fr;
+			auto l_extend = new_aabb.max()[axis] - center;
+			auto r_extend = center - new_aabb.min()[axis];
 
-			if(l_fit > r_fit) {
+			if(l_extend < r_extend) {
 				l_to = std::max(l_to, new_aabb.max()[axis]);
 				insert_into(l, std::forward<KV>(new_keyval), new_axis);
 			}
@@ -444,6 +444,7 @@ private:
 		Node* l = nullptr;
 		Node* r = nullptr;
 
+		Scalar center;
 		Scalar l_to;
 		Scalar r_fr;
 
