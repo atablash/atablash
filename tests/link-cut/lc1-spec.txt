@@ -1,0 +1,24 @@
+PROBLEM: Answer queries for max value
+
+
+
+INPUT:
+	N - number of operations:
+		link U V (U is root)
+		cut U
+		makeroot U
+		set WHERE WHAT
+		add WHERE WHAT
+		addpath U V WHAT
+		addpathroot U WHAT
+		addtree U WHAT
+		get U
+		getpath U V
+		getpathroot U
+		gettree U
+		
+OUTPUT:
+	for each get* answer!
+	
+	
+	
