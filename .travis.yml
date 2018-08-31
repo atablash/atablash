@@ -1,0 +1,36 @@
+dist: trusty
+sudo: required
+
+language: cpp
+compiler: g++
+
+addons:
+  apt:
+    sources:
+      # C++17
+      - ubuntu-toolchain-r-test
+    packages:
+      # C++17
+      - g++-7
+      # dependencies
+      - libgoogle-glog-dev
+      - libgtest-dev
+      #- libeigen3-dev
+      
+before_install:
+  - wget http://bitbucket.org/eigen/eigen/get/3.3.4.tar.bz2 && tar xvjf *.tar.bz2 && cd eigen* && mkdir build && cd build && cmake .. && make -j$(cat /proc/cpuinfo | grep processor | wc -l) && sudo make install && cd ../.. && rm -rf eigen* && rm -r *.tar.bz2
+  - export CC=gcc-7
+  - export CXX=g++-7
+
+install:
+  - travis/fix-gtest.sh
+
+script:
+  # build
+  - cmake -D ATABLASH_BUILD_TESTS=ON .
+  - make
+  - ctest --verbose
+
+notifications:
+  email: false
+
