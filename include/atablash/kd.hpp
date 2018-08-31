@@ -444,7 +444,7 @@ private:
 		Node* l = nullptr;
 		Node* r = nullptr;
 
-		Scalar center;
+		Scalar center; // can omit center, but works slower then (for one test case, not sure about others)
 		Scalar l_to;
 		Scalar r_fr;
 

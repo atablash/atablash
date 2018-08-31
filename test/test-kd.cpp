@@ -1,6 +1,11 @@
 #include <gtest/gtest.h>
+#include <glog/logging.h>
 
 #include <atablash/kd.hpp>
+
+
+#include <chrono>
+using namespace std::chrono;
 
 using namespace ab;
 
@@ -163,13 +168,15 @@ TEST(Kd, EachAabb) {
 
 
 TEST(KdAabb, EachAabb) {
+	srand(69);
+
 	Kd_Aabb<double, 4> kd;
 
 	using Aabb = Eigen::AlignedBox<double, 4>;
 
 	std::vector<Aabb> v;
 
-	for(int i=0; i<1000; ++i) {
+	for(int i=0; i<100000; ++i) {
 		Vec4 fr = {rand()%10 * 1.0, rand()%10 * 1.0, rand()%10 * 1.0, rand()%10 * 1.0};
 		Vec4 to = {rand()%10 * 1.0, rand()%10 * 1.0, rand()%10 * 1.0, rand()%10 * 1.0};
 		auto new_fr = fr.array().min(to.array()).matrix();
@@ -177,21 +184,41 @@ TEST(KdAabb, EachAabb) {
 		v.emplace_back(new_fr, new_to);
 	}
 
-	for(auto& bb : v) {
-		kd.insert(bb);
+
+
+	{
+		auto t0 = steady_clock::now();
+
+		for(auto& bb : v) {
+			kd.insert(bb);
+		}
+		
+		duration<double> dur = steady_clock::now() - t0;
+		LOG(INFO) << "insertion time: " << dur.count();
 	}
 
-	auto query_bb = Eigen::AlignedBox<double, 4>(Vec4{1.5, 1.5, 1.5, 1.5}, Vec4{3.5, 3.5, 3.5, 3.5});
+
+
+	auto query_bb = Aabb(Vec4{1.5, 1.5, 1.5, 1.5}, Vec4{3.5, 3.5, 3.5, 3.5});
 
 	int num = 0;
-	kd.each_intersect(query_bb, [&num](auto){
-		++num;
-	});
+	{
+		auto t0 = steady_clock::now();
+
+		kd.each_intersect(query_bb, [&num](auto){
+			++num;
+		});
+
+		duration<double> dur = steady_clock::now() - t0;
+		LOG(INFO) << "query time: " << dur.count();
+	}
 
 	int true_num = 0;
 	for(auto& bb : v) {
 		if(bb.intersects(query_bb)) ++true_num;
 	}
+
+	LOG(INFO) << "true_num: " << true_num;
 
 	EXPECT_EQ(true_num, num);
 }
